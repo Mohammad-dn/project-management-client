@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Menu, Moon, Search, Settings, Sun } from "lucide-react";
 import Link from "next/link";
-import { useAppDispatch, useAppSelector } from "../../redux";
 import { setIsDarkMode, setIsSidebarCollapsed } from "@/src/state";
+import { useAppDispatch, useAppSelector } from "@/src/app/redux";
 const Navbar = () => {
   const dispatch = useAppDispatch();
 
   const isSideBarCollapsed = useAppSelector(
-    (state) => state.global.isSideBarCollapsed,
+    (state: any) => state.global.isSideBarCollapsed,
   );
-  const isDarkMode = useAppSelector((state) => state.global.isDarkMode);
+  const isDarkMode = useAppSelector((state: any) => state.global.isDarkMode);
   return (
     <div className="dark: dark:py- flex items-center justify-between bg-white px-4 py-4 dark:bg-black dark:px-4 dark:py-3">
       {/* Search bar */}
