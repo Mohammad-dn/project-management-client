@@ -23,15 +23,18 @@ import Link from "next/link";
 import { setIsSidebarCollapsed } from "@/src/state";
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/src/app/redux";
+import { useGetProjectsQuery } from "@/src/state/api/api";
 
 const Sidebar = () => {
   const [showProjects, setShowProjects] = useState(true);
   const [showPriority, setShowPriority] = useState(true);
+
   const dispatch = useAppDispatch();
 
   const isSideBarCollapsed = useAppSelector(
     (state) => state.global.isSideBarCollapsed,
   );
+  const { data: projects } = useGetProjectsQuery();
 
   const sidebarClassNames = `fixed flex flex-col h-[100%] justify-between shadow-xl transition-all duration-300 h-full z-40 dark:bg-black overflow-y-auto bg-white ${isSideBarCollapsed ? "w-0 hidden" : "w-64"} `;
 
@@ -89,6 +92,15 @@ const Sidebar = () => {
           )}
         </button>
         {/* Project list */}
+        {showProjects &&
+          projects?.map((project) => (
+            <SidebarLink
+              key={project?.id}
+              label={project?.name}
+              icon={Briefcase}
+              href={`/projects/${project?.id}`}
+            />
+          ))}
 
         {/* priority links */}
 

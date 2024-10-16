@@ -1,7 +1,26 @@
-import React from "react";
+"use client";
+import { useState } from "react";
+import ProjectHeaderComponenet from "../ProjectHeader";
 
-const page = () => {
-  return <div>page</div>;
+type Props = {
+  params: { id: string };
 };
 
-export default page;
+const Project = ({ params }: Props) => {
+  const { id } = params;
+  const [activeTab, setActiveTab] = useState("Board");
+  const [isModalNewTaskOpen, setIsModalNewTaskOpen] = useState(false);
+
+  return (
+    <div>
+      {/* Modal new task  */}
+      {/* <ProjectHeaderComponenet
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      /> */}
+      {/* {activeTab === "Board" && <Board />} */}
+    </div>
+  );
+};
+
+export default Project;

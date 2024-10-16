@@ -1,19 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
 
 export interface Project {
   id: number;
   name: string;
   description?: string;
-  endDate?: string;
   startDate?: string;
+  endDate?: string;
 }
-export enum Status {
-  ToDo = " To Do",
-  WorkInProgress = "Work In Progress",
-  UnderReview = "Under Review",
-  Completed = "Completed",
-}
+
 export enum Priority {
   Urgent = "Urgent",
   High = "High",
@@ -22,13 +17,20 @@ export enum Priority {
   Backlog = "Backlog",
 }
 
+export enum Status {
+  ToDo = "To Do",
+  WorkInProgress = "Work In Progress",
+  UnderReview = "Under Review",
+  Completed = "Completed",
+}
+
 export interface User {
-  userId: number;
+  userId?: number;
   username: string;
   email: string;
-  profilePicture?: string;
+  profilePictureUrl?: string;
   cognitoId?: string;
-  teamId: number;
+  teamId?: number;
 }
 
 export interface Attachment {
@@ -52,14 +54,32 @@ export interface Task {
   projectId: number;
   authorUserId?: number;
   assignedUserId?: number;
+
   author?: User;
-  assignee?: Comment[];
+  assignee?: User;
+  comments?: Comment[];
   attachments?: Attachment[];
 }
+
+export interface SearchResults {
+  tasks?: Task[];
+  projects?: Project[];
+  users?: User[];
+}
+
+export interface Team {
+  teamId: number;
+  teamName: string;
+  productOwnerUserId?: number;
+  projectManagerUserId?: number;
+}
+
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+  }),
   reducerPath: "api",
-  tagTypes: ["Projects", "Tasks"],
+  tagTypes: ["Projects", "Tasks", "Users", "Teams"],
   endpoints: (build) => ({
     getProjects: build.query<Project[], void>({
       query: () => "projects",
@@ -77,7 +97,7 @@ export const api = createApi({
       query: ({ projectId }) => `tasks?projectId=${projectId}`,
       providesTags: (result) =>
         result
-          ? result?.map(({ id }) => ({ type: "Tasks" as const, id }))
+          ? result.map(({ id }) => ({ type: "Tasks" as const, id }))
           : [{ type: "Tasks" as const }],
     }),
     createTask: build.mutation<Task, Partial<Task>>({
@@ -86,11 +106,8 @@ export const api = createApi({
         method: "POST",
         body: task,
       }),
-      //* refetch the entire list of tasks
       invalidatesTags: ["Tasks"],
     }),
-
-    //* update specific task from all tasks
     updateTaskStatus: build.mutation<Task, { taskId: number; status: string }>({
       query: ({ taskId, status }) => ({
         url: `tasks/${taskId}/status`,
@@ -98,10 +115,7 @@ export const api = createApi({
         body: { status },
       }),
       invalidatesTags: (result, error, { taskId }) => [
-        {
-          type: "Tasks",
-          id: taskId,
-        },
+        { type: "Tasks", id: taskId },
       ],
     }),
   }),
@@ -112,4 +126,5 @@ export const {
   useCreateProjectMutation,
   useGetTasksQuery,
   useCreateTaskMutation,
-}: any = api;
+  useUpdateTaskStatusMutation,
+} = api;
