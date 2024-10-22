@@ -1,9 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Task as TaskType,
   useGetTasksQuery,
   useUpdateTaskStatusMutation,
 } from "@/src/state/api/api";
-import { EllipsisVertical, EllipsisVerticalIcon, Plus } from "lucide-react";
+import {
+  EllipsisVertical,
+  EllipsisVerticalIcon,
+  MessageSquareMore,
+  Plus,
+} from "lucide-react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { format } from "date-fns";
@@ -169,8 +175,8 @@ const Task = ({ task }: TaskProps) => {
     >
       {task.attachments && task.attachments.length > 0 && (
         <Image
-          src={`/${task.attachments[0].fileURL}`}
           alt={task?.attachments[0].fileName}
+          src={`/${task.attachments[0].fileURL}`}
           width={400}
           height={200}
           className="h-auto w-full rounded-t-md"
@@ -204,11 +210,49 @@ const Task = ({ task }: TaskProps) => {
             </div>
           )}
         </div>
-        <div className=""></div>
+        <div className="text-xs text-gray-500 dark:text-neutral-500">
+          {formattedStartDate && <span> {formattedStartDate} - </span>}
+          {formattedDueDate && <span> {formattedDueDate}</span>}
+        </div>
+        <p className="text-xs text-gray-600 dark:text-neutral-500">
+          {task?.description}
+        </p>
+        <div className="mt-4 border-t border-gray-200 dark:border-stroke-dark">
+          {/* Users  */}
+          <div className="mt-3 flex items-center justify-between">
+            <div className="flex -space-x-[6px] overflow-hidden">
+              {task?.assigne && (
+                <Image
+                  key={task.assigne.userid}
+                  src={`/${task.assigne.profilePictureUrl}`}
+                  width={30}
+                  height={30}
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary"
+                  alt={task.assigne?.username}
+                />
+              )}
+              {task?.author && (
+                <Image
+                  key={task.author.userid}
+                  src={`/${task.author.profilePictureUrl}`}
+                  width={30}
+                  height={30}
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary"
+                  alt={task.author?.username}
+                />
+              )}
+            </div>
+            <div className="flex items-center text-gray-500 dark:text-neutral-500">
+              <MessageSquareMore size={20} />
+              <span className="ml-1 text-sm dark:text-neutral-400">
+                {numberOfComments}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
-
 
 export default BoardView;
