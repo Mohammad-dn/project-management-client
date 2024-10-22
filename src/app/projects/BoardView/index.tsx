@@ -3,10 +3,11 @@ import {
   useGetTasksQuery,
   useUpdateTaskStatusMutation,
 } from "@/src/state/api/api";
-import { EllipsisVertical, Plus } from "lucide-react";
+import { EllipsisVertical, EllipsisVerticalIcon, Plus } from "lucide-react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { format } from "date-fns";
+import Image from "next/image";
 
 type BoardProps = {
   id: string;
@@ -124,7 +125,7 @@ const TaskColumn = ({
 // }
 
 const Task = ({ task }: TaskProps) => {
-  const [{ isDragging }, drop] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag(() => ({
     type: "task",
     item: { id: task.id },
     collect: (monitor: any) => ({
@@ -140,11 +141,71 @@ const Task = ({ task }: TaskProps) => {
     : "";
   const numberOfComments = (task.comments && task?.comments?.length) || 0;
 
-  const priorityTags = ({ priority }: { priority: TaskType["priority"] }) => (
+  const PriorityTag = ({ priority }: { priority: TaskType["priority"] }) => (
     <div
-      className={`rounded-full px-2 py-1 text-xs font-semibold ${priority === "Urgent" ? "bg-red-200 text-red-700" : priority === "High" ? "bg-yellow-200 text-yellow-700" : priority === "Low"}`}
+      className={`rounded-full px-2 py-1 text-xs font-semibold ${
+        priority === "Urgent"
+          ? "bg-red-200 text-red-700"
+          : priority === "High"
+            ? "bg-yellow-200 text-yellow-700"
+            : priority === "Medium"
+              ? "bg-green-200 text-green-700"
+              : priority === "Low"
+                ? "bg-blue-200 text-blue-700"
+                : "bg-gray-200 text-gray-700"
+      }`}
     >
       {priority}
+    </div>
+  );
+  return (
+    <div
+      ref={(instance) => {
+        drag(instance);
+      }}
+      className={`mb-4 rounded-md bg-white shadow dark:bg-dark-secondary ${
+        isDragging ? "opacity-50" : "opacity-100"
+      }`}
+    >
+      {task.attachments && task.attachments.length > 0 && (
+        <Image
+          src={`/${task.attachments[0].fileURL}`}
+          alt={task?.attachments[0].fileName}
+          width={400}
+          height={200}
+          className="h-auto w-full rounded-t-md"
+        />
+      )}
+      <div className="p-4 md:p-6">
+        <div className="flex items-start justify-between">
+          <div className="flex flex-1 flex-wrap items-center gap-2">
+            {task?.priority && <PriorityTag priority={task?.priority} />}
+            <div className="flex gap-2">
+              {taskTagsSplit.map((tag) => (
+                <div
+                  key={tag}
+                  className="bg-blue100 text tex-xs rounded-full px-2 py-1"
+                >
+                  {" "}
+                  {tag}
+                </div>
+              ))}
+            </div>
+          </div>
+          <button className="flex h-6 w-4 flex-shrink-0 items-center justify-center dark:text-neutral-500">
+            <EllipsisVerticalIcon size={26} />
+          </button>
+        </div>
+        <div className="my-3 flex justify-between">
+          <h4 className="text-base font-bold dark:text-white">{task?.title}</h4>
+          {typeof task.points === "number" && (
+            <div className="text-xs font-semibold dark:text-white">
+              {task?.points}
+            </div>
+          )}
+        </div>
+        <div className=""></div>
+      </div>
     </div>
   );
 };
