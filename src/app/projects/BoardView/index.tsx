@@ -126,9 +126,9 @@ const TaskColumn = ({
   );
 };
 
-// type TaskProps{
-//   task:TaskTyppe
-// }
+type TaskProps = {
+  task: TaskType;
+};
 
 const Task = ({ task }: TaskProps) => {
   const [{ isDragging }, drag] = useDrag(() => ({

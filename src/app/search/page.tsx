@@ -22,6 +22,7 @@ const Search = () => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchTerm(event.target.value);
     },
+    500,
   );
 
   useEffect(() => {
