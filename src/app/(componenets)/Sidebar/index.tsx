@@ -75,7 +75,7 @@ const Sidebar = () => {
           <SidebarLink icon={Home} href="/" label="Home" />
           <SidebarLink icon={Briefcase} href="/timeline" label="Timeline" />
           <SidebarLink icon={Search} href="/search" label="Search" />
-          <SidebarLink icon={Settings} href="/setting" label="Settings" />
+          <SidebarLink icon={Settings} href="/settings" label="Settings" />
           <SidebarLink icon={User} href="/users" label="Users" />
           <SidebarLink icon={Users} href="/teams" label="Team" />
         </nav>
